@@ -1,43 +1,52 @@
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public class AppointmentManager {
-    //criamos com o modificador protected para que subclasses possam manipular a lista diretamente
-    protected List<Appointment> appointments; //lista appointments com os parametros da classe Appointment
+    protected Set<Appointment> appointments; //atributo appointments que é um hashset, para garantir id's únicos
 
-    //cria uma nova arraylist para reservar os compromissos
     public AppointmentManager() {
-        this.appointments = new ArrayList<>();
-    } //usamos arraylist como implementação para a lista criada acima
+        this.appointments = new HashSet<>(); //construtor que inicializa o hashSet
+    }
 
-    //metodo pai para adição de compromisso
+//método que adiciona um compromisso no hash, caso o ID já exista, retorna erro
     public void addAppointment(Appointment appointment) {
-        appointments.add(appointment);
+        if (appointments.add(appointment)) {
+            System.out.println("Compromisso adicionado com sucesso.");
+        } else {
+            System.out.println("Um compromisso com esse ID já existe.");
+        }
     }
 
-    //método pai para remoção de tarefa por meio do id
+//método que remove um compromisso pelo ID, caso o ID não exista, retorna erro
     public void removeAppointment(int id) {
-        appointments.removeIf(appointment -> appointment.getId()==id);
+        if (appointments.removeIf(appointment -> appointment.getId() == id)) {
+            System.out.println("Compromisso removido com sucesso.");
+        } else {
+            System.out.println("Compromisso não encontrado.");
+        }
     }
 
-    //método pai para buscar um compromisso pelo ID informado no momento da criação
+//método que utiliza a classe optional para poder utilizar os .filter(),.findFirst(),etc.
     public Optional<Appointment> getAppointmentById(int id) {
-        return appointments.stream() //.stream cria um fluxo de dados que serão filtrados
-                .filter(appointment -> appointment.getId() == id) //filtra pelo id dos dados vindos do fluxo
-                .findFirst(); //capta o primeiro encontrado
-    }
-    public void editAppointment(Appointment appointment, int newId, String newTitle, String newDescription, LocalDate newDate, LocalTime newTime) {
-        appointment.setId(newId);//seta um novo id caso seja essa a opção escolhida
-        appointment.setTitle(newTitle);//seta um novo titulo caso seja essa a opção escolhida
-        appointment.setDescription(newDescription);//seta uma nova descrição caso seja essa a opção escolhida
-        appointment.setDate(newDate);//seta uma nova data caso seja essa a opção escolhida
-        appointment.setTime(newTime);//seta um novo horario caso seja essa a opção escolhida
+        return appointments.stream() //.stream realiza um 'derramamento' de todos os elementos da lista appointments
+                .filter(appointment -> appointment.getId() == id) //filtra os ID iguais ao digitado
+                .findFirst(); //lista o primeiro compatível
     }
 
-    public List<Appointment> listAppointments(){
+//método que atualiza os dados do compromisso (vide parâmetros)    
+    public void editAppointment(Appointment appointment, int newId, String newTitle, String newDescription, LocalDate newDate, LocalTime newTime) {
+        appointment.setId(newId);
+        appointment.setTitle(newTitle);
+        appointment.setDescription(newDescription);
+        appointment.setDate(newDate);
+        appointment.setTime(newTime);
+    }
+
+//método que lista todos os compromissos    
+    public Set<Appointment> listAppointments() {
         return appointments;
     }
 }
